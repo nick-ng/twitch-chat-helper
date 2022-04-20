@@ -23,8 +23,8 @@ const GithubLink = styled.a`
 export default function Nav() {
   return (
     <NavContainer>
-      <NavLink icon="fa-table" to="/" exact>
-        Test
+      <NavLink icon="fa-twitch" to="/" exact>
+        Twitch Chat Helper
       </NavLink>
       <GithubLink
         target="_blank"

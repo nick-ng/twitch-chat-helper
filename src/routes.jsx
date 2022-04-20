@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Switch, Route as R } from "react-router-dom";
 
 import Nav from "./components/nav";
 import NotFound from "./components/not-found";
+import TwitchChatDashboard from "./components/twitch-chat-dashboard";
 
 const GlobalStyle = createGlobalStyle`
 body {
@@ -31,9 +32,7 @@ export default function App() {
         <Nav />
         <Switch>
           <R path="/" exact>
-            <div>
-              <h1>Hello World</h1>
-            </div>
+            <TwitchChatDashboard />
           </R>
           <R>
             <NotFound />
