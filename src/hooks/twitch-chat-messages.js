@@ -74,7 +74,7 @@ export default function useTwitchChatMessages(channel) {
     });
 
     return () => {
-      console.info("disconnecting from ", props.channel);
+      console.info("disconnecting from ", channel);
       client.disconnect();
     };
   }, [channel]);

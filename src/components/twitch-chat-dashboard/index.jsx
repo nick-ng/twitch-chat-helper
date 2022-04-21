@@ -8,7 +8,7 @@ import BigChatMessage from "./big-chat-message";
 const SETTINGS_STORE = "SETTINGS_STORE_TWITCH_CHAT_HELPER";
 
 const Container = styled.div`
-  height: 100%;
+  height: 95vh;
   display: flex;
   flex-direction: ${(props) => (props.reverse ? "row-reverse" : "row")};
   align-items: center;
@@ -16,26 +16,54 @@ const Container = styled.div`
 
 const Controls = styled.div`
   flex-grow: 0;
-  flex-basis: 20em;
+  flex-shrink: 1;
   align-self: flex-start;
   margin: 0 1em;
+
+  p {
+    max-width: 20em;
+  }
+
+  input {
+    width: 5em;
+  }
 `;
 
 export default function TwitchChatDashboard() {
   const [formData, setFormData] = useState({
     channel: "",
     messageCooldown: 10,
+    fadeStartSeconds: 5,
+    fadeSeconds: 1,
+    showFullChat: false,
   });
-  const [channel, setChannel] = useState("");
-  const [messages, setTestMessage] = useTwitchChatMessages(channel);
+  const [activeSettings, setActiveSettings] = useState({
+    channel: "",
+    messageCooldown: 10,
+    fadeStartSeconds: 5,
+    fadeSeconds: 1,
+    showFullChat: false,
+  });
+  const [messages, setTestMessage] = useTwitchChatMessages(
+    activeSettings.channel
+  );
   const [previousMessageTimestamp, setPreviousMessageTimestamp] = useState(0);
-  const [messageCooldown, setMessageCooldown] = useState(10000);
   const [notificationMessage, setNotificationMessage] = useState(null);
 
   const applySettings = useRef((newSettings) => {
-    setChannel(newSettings.channel);
-    newSettings.messageCooldown &&
-      setMessageCooldown(newSettings.messageCooldown);
+    setActiveSettings((prev) => ({
+      channel: newSettings.channel,
+      messageCooldown: newSettings.messageCooldown
+        ? parseInt(newSettings.messageCooldown, 10) * 1000
+        : prev.messageCooldown,
+      fadeStartSeconds: newSettings.fadeStartSeconds
+        ? parseInt(newSettings.fadeStartSeconds, 10)
+        : prev.fadeStartSeconds,
+      fadeSeconds: newSettings.fadeSeconds
+        ? parseInt(newSettings.fadeSeconds, 10)
+        : prev.fadeSeconds,
+      showFullChat: newSettings.showFullChat,
+    }));
   }).current;
 
   useEffect(() => {
@@ -45,7 +73,7 @@ export default function TwitchChatDashboard() {
 
     const { timestamp } = messages[0];
 
-    if (timestamp - previousMessageTimestamp > messageCooldown) {
+    if (timestamp - previousMessageTimestamp > activeSettings.messageCooldown) {
       setNotificationMessage(messages[0]);
     }
 
@@ -68,72 +96,140 @@ export default function TwitchChatDashboard() {
 
   return (
     <Container>
-      <TwitchChatWidget twitchChannel={channel} />
+      {activeSettings.showFullChat && (
+        <TwitchChatWidget twitchChannel={activeSettings.channel} />
+      )}
       <Controls>
-        <h2>Watching {channel}</h2>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            setChannel(formData.channel);
-            setMessageCooldown(formData.messageCooldown);
-            localStorage.setItem(SETTINGS_STORE, JSON.stringify(formData));
-          }}
-        >
-          <table>
-            <tbody>
-              <tr>
-                <td>Channel</td>
-                <td>
-                  <input
-                    type="text"
-                    value={formData.channel}
-                    onChange={(e) => {
-                      setFormData((prev) => {
-                        return {
-                          ...prev,
-                          channel: e.target.value,
-                        };
-                      });
-                    }}
-                  />
-                </td>
-              </tr>
-              <tr>
-                <td>Seconds</td>
-                <td>
-                  <input
-                    style={{ textAlign: "right" }}
-                    type="number"
-                    value={formData.messageCooldown}
-                    onChange={(e) => {
-                      setFormData((prev) => {
-                        return {
-                          ...prev,
-                          messageCooldown: e.target.value,
-                        };
-                      });
-                    }}
-                  />
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          <button>Save</button>
-        </form>
-        <button
-          onClick={() => {
-            setTestMessage(`Test ${Date.now()}`);
-          }}
-        >
-          Test
-        </button>
-        <p>
-          If it's been {messageCooldown} seconds since the last message, the
-          next message will be displayed in large text briefly.
-        </p>
+        {activeSettings.channel ? (
+          <h2>{activeSettings.channel}</h2>
+        ) : (
+          <p>Open Settings and set a channel</p>
+        )}
+        <details>
+          <summary>Settings</summary>
+          <p>Times are in seconds</p>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              applySettings(formData);
+              localStorage.setItem(SETTINGS_STORE, JSON.stringify(formData));
+            }}
+          >
+            <table>
+              <tbody>
+                <tr>
+                  <td>Show Full Chat</td>
+                  <td>
+                    <input
+                      type="checkbox"
+                      checked={formData.showFullChat}
+                      onChange={(e) => {
+                        setFormData((prev) => {
+                          return {
+                            ...prev,
+                            showFullChat: !prev.showFullChat,
+                          };
+                        });
+                      }}
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>Channel</td>
+                  <td>
+                    <input
+                      type="text"
+                      value={formData.channel}
+                      onChange={(e) => {
+                        setFormData((prev) => {
+                          return {
+                            ...prev,
+                            channel: e.target.value,
+                          };
+                        });
+                      }}
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>Between Messages</td>
+                  <td>
+                    <input
+                      style={{ textAlign: "right" }}
+                      type="number"
+                      value={formData.messageCooldown}
+                      onChange={(e) => {
+                        setFormData((prev) => {
+                          return {
+                            ...prev,
+                            messageCooldown: e.target.value,
+                          };
+                        });
+                      }}
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>Before Fadeout</td>
+                  <td>
+                    <input
+                      style={{ textAlign: "right" }}
+                      type="number"
+                      value={formData.fadeStartSeconds}
+                      onChange={(e) => {
+                        setFormData((prev) => {
+                          return {
+                            ...prev,
+                            fadeStartSeconds: e.target.value,
+                          };
+                        });
+                      }}
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>Fadeout Duration</td>
+                  <td>
+                    <input
+                      style={{ textAlign: "right" }}
+                      type="number"
+                      value={formData.fadeSeconds}
+                      onChange={(e) => {
+                        setFormData((prev) => {
+                          return {
+                            ...prev,
+                            fadeSeconds: e.target.value,
+                          };
+                        });
+                      }}
+                    />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <button>Save</button>
+          </form>
+          <button
+            onClick={() => {
+              setTestMessage(`Test ${Date.now()}`);
+            }}
+          >
+            Test
+          </button>
+          <p>
+            If it's been <b>{activeSettings.messageCooldown / 1000}</b> seconds
+            since the last message, the next message will be displayed in large
+            text for <b>{activeSettings.fadeStartSeconds}</b> then fade out over{" "}
+            <b>{activeSettings.fadeSeconds}</b>.
+          </p>
+        </details>
       </Controls>
       {notificationMessage && (
-        <BigChatMessage message={notificationMessage} duration={5} />
+        <BigChatMessage
+          message={notificationMessage}
+          fadeSeconds={activeSettings.fadeSeconds}
+          fadeStartSeconds={activeSettings.fadeStartSeconds}
+        />
       )}
     </Container>
   );

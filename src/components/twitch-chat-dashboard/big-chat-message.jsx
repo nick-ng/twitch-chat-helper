@@ -9,9 +9,14 @@ const Container = styled.div`
   transition-duration: ${(props) => props.fadeOutDuration || 0}s;
   opacity: ${(props) => props.opacityB};
   flex-basis: 50%;
+  flex-grow: 1;
 `;
 
-export default function BigChatMessage({ message, duration }) {
+export default function BigChatMessage({
+  message,
+  fadeSeconds,
+  fadeStartSeconds,
+}) {
   const [opacity, setOpacity] = useState(1);
   const timeoutRef = useRef(null);
 
@@ -24,7 +29,7 @@ export default function BigChatMessage({ message, duration }) {
 
     timeoutRef.current = setTimeout(() => {
       setOpacity(0);
-    }, duration * 500);
+    }, fadeSeconds * 500);
 
     return () => {
       clearTimeout(timeoutRef.current);
@@ -33,7 +38,7 @@ export default function BigChatMessage({ message, duration }) {
 
   return (
     <Container
-      fadeOutDuration={opacity === 1 ? 0.01 : duration / 2}
+      fadeOutDuration={opacity === 1 ? 0.01 : fadeStartSeconds}
       opacityB={opacity}
     >
       [{dayjs(message.timestamp).format("HH:mm:ss")}]{" "}
