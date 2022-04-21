@@ -29,7 +29,7 @@ export default function BigChatMessage({
 
     timeoutRef.current = setTimeout(() => {
       setOpacity(0);
-    }, fadeSeconds * 500);
+    }, fadeSeconds * 1000);
 
     return () => {
       clearTimeout(timeoutRef.current);
