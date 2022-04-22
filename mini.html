@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Twitch Chat Helper</title>
+</head>
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+  }
+
+  #main {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    height: 100vh;
+    padding: 18px;
+  }
+</style>
+
+<body>
+  <div id="main">
+    <div id="alert-element">Loading...</div>
+  </div>
+</body>
+<script src="./tmi.min.js"></script>
+<script>
+  (() => {
+    const getClient = (channel) => {
+      if (!channel) {
+        return null;
+      }
+
+      const client = new tmi.Client({
+        options: {},
+        connection: {
+          reconnect: true,
+          secure: true,
+        },
+        channels: [channel],
+      });
+
+      client.connect().catch(console.error);
+      return client;
+    }
+
+    const mainEl = document.getElementById('main')
+    const alertEl = document.getElementById('alert-element');
+
+    const searchParams = new URLSearchParams(window.location.search);
+    const channel = searchParams.get('channel');
+    const backgroundColor = searchParams.get('bgcolor');
+    const color = searchParams.get('color');
+    const fontSize = searchParams.get('fontsize');
+
+    mainEl.setAttribute("style", `
+      background-color: #${backgroundColor || '000000'};
+      color: #${color || 'ffffff'};
+    `)
+
+    alertEl.setAttribute("style", `font-size: ${fontSize || 36}pt;`)
+
+    if (!channel) {
+      alertEl.textContent = `Please include a channel param.`;
+      return;
+    }
+
+    const client = getClient(channel);
+    let lastMessageTimestamp = 0;
+    const messageCooldown = 10000;
+
+    client.on('connected', () => {
+      alertEl.textContent = ''
+    })
+
+    client.on('message', (channel, tags, message, self) => {
+      const timestamp = parseInt(tags?.["tmi-sent-ts"], 10);
+
+      if (timestamp - lastMessageTimestamp > messageCooldown) {
+        const date = new Date(timestamp);
+
+        alertEl.textContent = `[${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}:${date.getSeconds().toString().padStart(2, '0')}] ${tags["display-name"]}`;
+      }
+
+      lastMessageTimestamp = timestamp;
+    })
+  })()
+</script>
+
+</html>
