@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "build-only": "cross-env NODE_ENV=production webpack",
-    "build": "cross-env NODE_ENV=production webpack && cp ./dist/index.html ./dist/404.html && cp ./static-html/* ./dist/* && echo \"twitch-chat.pux.one\" > ./dist/CNAME",
+    "build": "cross-env NODE_ENV=production webpack && cp ./dist/index.html ./dist/404.html && cp ./static-html/* ./dist/ && echo \"twitch-chat.pux.one\" > ./dist/CNAME",
     "deploy": "gh-pages -d dist -r https://${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git",
     "dev": "cross-env NODE_ENV=development webpack serve",
     "pretty": "pretty-quick --staged",
