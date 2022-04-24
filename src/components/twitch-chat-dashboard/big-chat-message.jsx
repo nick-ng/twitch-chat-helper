@@ -8,8 +8,8 @@ const Container = styled.div`
   transition-timing-function: linear;
   transition-duration: ${(props) => props.fadeOutDuration || 0}s;
   opacity: ${(props) => props.opacityB};
-  flex-basis: 50%;
   flex-grow: 1;
+  margin-top: 20vh;
 `;
 
 export default function BigChatMessage({

@@ -4,21 +4,26 @@ import styled from "styled-components";
 import useTwitchChatMessages from "../../hooks/twitch-chat-messages";
 import TwitchChatWidget from "../twitch-chat-widget";
 import BigChatMessage from "./big-chat-message";
+import GithubLink from "../github-link";
 
 const SETTINGS_STORE = "SETTINGS_STORE_TWITCH_CHAT_HELPER";
 
 const Container = styled.div`
-  height: 95vh;
+  height: 100vh;
   display: flex;
   flex-direction: ${(props) => (props.reverse ? "row-reverse" : "row")};
   align-items: center;
 `;
 
-const Controls = styled.div`
-  flex-grow: 0;
+const ColumnTwo = styled.div`
+  flex-grow: 1;
   flex-shrink: 1;
   align-self: flex-start;
   margin: 0 1em;
+  display: flex;
+  flex-direction: column;
+  justify-content: stretch;
+  height: 100vh;
 
   p {
     max-width: 20em;
@@ -99,7 +104,7 @@ export default function TwitchChatDashboard() {
       {activeSettings.showFullChat && (
         <TwitchChatWidget twitchChannel={activeSettings.channel} />
       )}
-      <Controls>
+      <ColumnTwo>
         {activeSettings.channel ? (
           <h2>{activeSettings.channel}</h2>
         ) : (
@@ -222,15 +227,16 @@ export default function TwitchChatDashboard() {
             text for <b>{activeSettings.fadeStartSeconds}</b> then fade out over{" "}
             <b>{activeSettings.fadeSeconds}</b>.
           </p>
+          <GithubLink size="24px" />
         </details>
-      </Controls>
-      {notificationMessage && (
-        <BigChatMessage
-          message={notificationMessage}
-          fadeSeconds={activeSettings.fadeSeconds}
-          fadeStartSeconds={activeSettings.fadeStartSeconds}
-        />
-      )}
+        {notificationMessage && (
+          <BigChatMessage
+            message={notificationMessage}
+            fadeSeconds={activeSettings.fadeSeconds}
+            fadeStartSeconds={activeSettings.fadeStartSeconds}
+          />
+        )}
+      </ColumnTwo>
     </Container>
   );
 }

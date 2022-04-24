@@ -1,6 +1,11 @@
 import React from "react";
 
-export default function Icon({ className, icon }) {
+export default function Icon({ className, icon, size }) {
   const classNames = [className, "fa", icon];
-  return <i className={classNames.join(" ")}></i>;
+  return (
+    <i
+      style={{ fontSize: size || "28px" }}
+      className={classNames.join(" ")}
+    ></i>
+  );
 }

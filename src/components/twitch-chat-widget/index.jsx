@@ -2,7 +2,12 @@ import React from "react";
 import styled from "styled-components";
 
 const Container = styled.div`
-  height: 90vh;
+  height: 99vh;
+  box-sizing: border-box;
+
+  iframe {
+    border: none;
+  }
 `;
 
 export default function TwitchChatWidget({ twitchChannel }) {
