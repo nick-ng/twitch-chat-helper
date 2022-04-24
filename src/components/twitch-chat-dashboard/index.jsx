@@ -20,9 +20,6 @@ const ColumnTwo = styled.div`
   flex-shrink: 1;
   align-self: flex-start;
   margin: 0 1em;
-  display: flex;
-  flex-direction: column;
-  justify-content: stretch;
   height: 100vh;
 
   p {
