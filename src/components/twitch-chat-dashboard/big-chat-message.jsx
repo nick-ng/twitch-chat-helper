@@ -9,7 +9,7 @@ const Container = styled.div`
   transition-duration: ${(props) => props.fadeOutDuration || 0}s;
   opacity: ${(props) => props.opacityB};
   flex-grow: 1;
-  margin-top: 20vh;
+  margin-top: 25vh;
 `;
 
 export default function BigChatMessage({

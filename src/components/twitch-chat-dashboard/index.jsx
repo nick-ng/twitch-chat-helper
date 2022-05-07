@@ -3,6 +3,7 @@ import styled from "styled-components";
 
 import useTwitchChatMessages from "../../hooks/twitch-chat-messages";
 import TwitchChatWidget from "../twitch-chat-widget";
+import TwitchVideoWidget from "../twitch-video-widget";
 import BigChatMessage from "./big-chat-message";
 import GithubLink from "../github-link";
 
@@ -38,6 +39,7 @@ export default function TwitchChatDashboard() {
     fadeStartSeconds: 5,
     fadeSeconds: 1,
     showFullChat: false,
+    showVideo: false,
   });
   const [activeSettings, setActiveSettings] = useState({
     channel: "",
@@ -45,6 +47,7 @@ export default function TwitchChatDashboard() {
     fadeStartSeconds: 5,
     fadeSeconds: 1,
     showFullChat: false,
+    showVideo: false,
   });
   const [messages, setTestMessage] = useTwitchChatMessages(
     activeSettings.channel
@@ -65,6 +68,7 @@ export default function TwitchChatDashboard() {
         ? parseInt(newSettings.fadeSeconds, 10)
         : prev.fadeSeconds,
       showFullChat: newSettings.showFullChat,
+      showVideo: newSettings.showVideo,
     }));
   }).current;
 
@@ -130,6 +134,23 @@ export default function TwitchChatDashboard() {
                           return {
                             ...prev,
                             showFullChat: !prev.showFullChat,
+                          };
+                        });
+                      }}
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>Show Video</td>
+                  <td>
+                    <input
+                      type="checkbox"
+                      checked={formData.showVideo}
+                      onChange={(e) => {
+                        setFormData((prev) => {
+                          return {
+                            ...prev,
+                            showVideo: !prev.showVideo,
                           };
                         });
                       }}
@@ -234,6 +255,9 @@ export default function TwitchChatDashboard() {
           />
         )}
       </ColumnTwo>
+      {activeSettings.showVideo && (
+        <TwitchVideoWidget channel={activeSettings.channel} />
+      )}
     </Container>
   );
 }
