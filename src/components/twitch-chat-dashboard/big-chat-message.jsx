@@ -9,13 +9,21 @@ const Container = styled.div`
   transition-duration: ${(props) => props.fadeOutDuration || 0}s;
   opacity: ${(props) => props.opacityB};
   flex-grow: 1;
-  margin-top: 25vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: ${(props) => props.justifyContent};
+  align-items: flex-start;
+
+  span {
+    margin: 5px 0;
+  }
 `;
 
 export default function BigChatMessage({
   message,
   fadeSeconds,
   fadeStartSeconds,
+  textPosition,
 }) {
   const [opacity, setOpacity] = useState(1);
   const timeoutRef = useRef(null);
@@ -40,9 +48,12 @@ export default function BigChatMessage({
     <Container
       fadeOutDuration={opacity === 1 ? 0.01 : fadeStartSeconds}
       opacityB={opacity}
+      justifyContent={textPosition || "center"}
     >
-      [{dayjs(message.timestamp).format("HH:mm:ss")}]{" "}
-      {message.tags["display-name"]}: {message.message}
+      <span>
+        [{dayjs(message.timestamp).format("HH:mm:ss")}]{" "}
+        {message.tags["display-name"]}: {message.message}
+      </span>
     </Container>
   );
 }

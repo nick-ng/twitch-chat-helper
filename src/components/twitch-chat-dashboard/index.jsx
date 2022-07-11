@@ -19,6 +19,10 @@ const Container = styled.div`
 const ColumnTwo = styled.div`
   flex-grow: 1;
   flex-shrink: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
   align-self: flex-start;
   margin: 0 1em;
   height: 100vh;
@@ -40,6 +44,7 @@ export default function TwitchChatDashboard() {
     fadeSeconds: 1,
     showFullChat: false,
     showVideo: false,
+    textPosition: "center",
   });
   const [activeSettings, setActiveSettings] = useState({
     channel: "",
@@ -48,6 +53,7 @@ export default function TwitchChatDashboard() {
     fadeSeconds: 1,
     showFullChat: false,
     showVideo: false,
+    textPosition: "center",
   });
   const [messages, setTestMessage] = useTwitchChatMessages(
     activeSettings.channel
@@ -69,6 +75,7 @@ export default function TwitchChatDashboard() {
         : prev.fadeSeconds,
       showFullChat: newSettings.showFullChat,
       showVideo: newSettings.showVideo,
+      textPosition: newSettings.textPosition,
     }));
   }).current;
 
@@ -228,6 +235,26 @@ export default function TwitchChatDashboard() {
                     />
                   </td>
                 </tr>
+                <tr>
+                  <td>Text Position</td>
+                  <td>
+                    <select
+                      onChange={(e) => {
+                        setFormData((prev) => {
+                          return {
+                            ...prev,
+                            textPosition: e.target.value,
+                          };
+                        });
+                      }}
+                      value={formData.textPosition}
+                    >
+                      <option value="flex-start">Top</option>
+                      <option value="center">Middle</option>
+                      <option value="flex-end">Bottom</option>
+                    </select>
+                  </td>
+                </tr>
               </tbody>
             </table>
             <button>Save</button>
@@ -252,6 +279,7 @@ export default function TwitchChatDashboard() {
             message={notificationMessage}
             fadeSeconds={activeSettings.fadeSeconds}
             fadeStartSeconds={activeSettings.fadeStartSeconds}
+            textPosition={activeSettings.textPosition}
           />
         )}
       </ColumnTwo>
